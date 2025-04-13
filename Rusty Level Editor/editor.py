@@ -6,6 +6,7 @@ from scripts.utils import load_images, Button
 from data.images import tiles
 from scripts.tilemap import Tilemap
 from scripts.assets import Assets
+from scripts.user_interface import UI
 
 
 #class Tilemap:
@@ -62,16 +63,24 @@ class Editor:
         self.show_origin = True
 
         self.tile_list = list(self.assets.assets)
-        self.tile_group = 0
-        self.tile_variant = 0
+        self.tile_group = 'decor'
+        self.tile_variant = 2
 
         self.clicking = False
         self.right_clicking = False
         self.shift = False
         self.ongrid = True
+        #the checker to see if the user is hovering over a UI element or not.
+        #This will make it so that the user will not accidentally place things if they click an UI elemnt
+        self.is_hovering = False
 
-        self.test_button = Button(self, (100, 100, 200, 50), (0,0,0), 'Tiny Islanders', 'Button', hover_color=(200,200,200))
-    
+        #Draws button UI and stores them in an array
+        self.ui = UI(self)
+        self.buttons = []
+        self.ui.load_tile_ui(self.overlay)
+        
+        
+
     def draw_grid(self):
         tile_size = self.tilemap.tile_size
 
@@ -111,6 +120,8 @@ class Editor:
             self.display.fill((20,20,25))
             self.overlay.fill((0,0,0,0))
 
+            self.is_hovering = False
+
             #Updates the screen position based on movement
             self.scroll[0] += (self.movement[1] - self.movement[0]) * 2
             self.scroll[1] += (self.movement[3] - self.movement[2]) * 2
@@ -126,8 +137,11 @@ class Editor:
 
             self.tilemap.render(self.display, offset=render_scroll)
 
+            #Draws the grid
             self.draw_grid()
-            #self.test_button.draw(self.overlay, (mpos[0], mpos[1]))
+            for button in self.buttons:
+                button.draw(self.overlay, mpos)
+            
 
             text_surface = self.layer_text.render('Layer ' + str(self.current_layer), False, (255,255,255)).convert()
             text_surface.set_alpha(self.layer_text_opacity)
@@ -136,7 +150,7 @@ class Editor:
                             self.overlay.height - text_surface.height))        
 
             #Sets the preview tile image of the selected tile
-            current_tile_img = self.assets.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
+            current_tile_img = self.assets.assets[self.tile_group][self.tile_variant].copy()
             current_tile_img.set_alpha(100)
 
             
@@ -149,13 +163,15 @@ class Editor:
             
             #If the user is clicking, and the tile grid is toggled on, then this will place the tile in
             #its designated spot
-            if self.clicking and self.ongrid:
+            #Checks to see if user is hovering over UI
+            if self.clicking and self.ongrid and not self.is_hovering:
                 if self.current_layer not in self.active_layers:
                     self.active_layers.append(self.current_layer)
                     self.tilemap.active_layers.append(self.current_layer)
-                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos, 'layer': self.current_layer}
+                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': self.tile_group, 'variant': self.tile_variant, 'pos': tile_pos, 'layer': self.current_layer}
             #Deletes tile at mouse position
-            if self.right_clicking:
+            #Checks to see if player is hovering over UI
+            if self.right_clicking and not self.is_hovering:
                 tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
                 if tile_loc in self.tilemap.tilemap:
                     del self.tilemap.tilemap[tile_loc]
@@ -176,9 +192,10 @@ class Editor:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #LMB
                     if event.button == 1:
-                        #self.test_button.handle_event(event, mpos)
+                        for button in self.buttons:
+                            button.handle_event(event, mpos)
                         self.clicking = True
-                        if not self.ongrid:
+                        if not self.ongrid and not self.is_hovering:
                             if self.current_layer not in self.active_layers:
                                 self.active_layers.append(self.current_layer)
                                 self.tilemap.active_layers.append(self.current_layer)
@@ -190,16 +207,20 @@ class Editor:
                     #Changes the tile selection
                     if self.shift:
                         if event.button == 4:
-                            self.tile_variant = (self.tile_variant - 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
+                            pass
+                            #self.tile_variant = (self.tile_variant - 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
                         if event.button == 5:
-                            self.tile_variant = (self.tile_variant + 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
+                            pass
+                            #self.tile_variant = (self.tile_variant + 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
                     else:
                         if event.button == 4:
-                            self.tile_group = (self.tile_group - 1) % len(self.tile_list)
-                            self.tile_variant = 0
+                            pass
+                            #self.tile_group = (self.tile_group - 1) % len(self.tile_list)
+                            #self.tile_variant = 0
                         if event.button == 5:
-                            self.tile_group = (self.tile_group + 1) % len(self.tile_list)
-                            self.tile_variant = 0
+                            pass
+                            #self.tile_group = (self.tile_group + 1) % len(self.tile_list)
+                            #self.tile_variant = 0
                 if event.type == pygame.MOUSEBUTTONUP:
                     #LMB
                     if event.button == 1:

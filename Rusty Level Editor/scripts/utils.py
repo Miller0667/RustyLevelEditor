@@ -15,6 +15,9 @@ def load_images(path):
         images.append(load_image(path + '/' + img_name))
     return images
 
+def update_tile(tile):
+    pass
+
 
 class Animation:
     def __init__(self, images, img_dur=5, loop=True):
@@ -39,37 +42,34 @@ class Animation:
         return self.images[int(self.frame / self.img_duration)]
 
 class Button:
-    def __init__(self, game, rect, text_color=(255,255,255), font=None, text=None, action=None, color=(255,255,255), hover_color=(255,255,255), img=None):
+    def __init__(self, game, pos, tile_info, img, action=None):
         self.game = game
-        self.rect = rect
-        self.text_color = text_color
-        self.font = font
-        self.text = text
         self.action = action
-        self.color= color
         self.img = img
-        self.hover_color = hover_color
+        self.pos = pos
+        self.tile_info = tile_info
+
+        print('variant - ' + str(self.tile_info['variant']))
+
+        self.update_rect()
     
-    def draw(self, surface, mouse_pos):
-        #Draw the button rectangle
-        self.rect = pygame.draw.rect(surface, self.color, self.rect)
+    def update_rect(self):
+        self.img_rect = self.img.get_rect()
+        self.img_rect.x = self.pos[0]
+        self.img_rect.y = self.pos[1]
 
-        #Checks for mouse hover
-        is_hovered = self.rect.collidepoint(mouse_pos[0], mouse_pos[1])
-        color = self.hover_color if is_hovered else self.color
+    
+    def draw(self, surf, mouse_pos):
+        surf.blit(self.img,(self.pos[0], self.pos[1]))
+        self.update_rect()
 
-        #draw the text centered
-        #if self.text:
-            #text_surf = self.font.render(self.text, True, self.text_color)
-            #text_rect = text_surf.get_rect(center=self.rect.center)
-            #surface.blit(text_surf, text_rect)
+        if self.img_rect.collidepoint(mouse_pos):
+            self.game.is_hovering = True
     
     def handle_event(self, event, mouse_position):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if self.rect.collidepoint(mouse_position):
-                if self.action:
-                    self.action()
-                else:
-                    print('Clicked!')
+            if self.img_rect.collidepoint(mouse_position):
+                self.game.tile_group = self.tile_info['type']
+                self.game.tile_variant = self.tile_info['variant']
 
         
