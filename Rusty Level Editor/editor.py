@@ -24,11 +24,12 @@ class Editor:
         #sets window res and editor res
         self.screen_res = (1280,960)
         self.display_res = (320, 240)
+        self.editor_upscale_res = (1280,960)
 
         #applies the set resolutions
         self.screen = pygame.display.set_mode(self.screen_res)
         self.display = pygame.Surface(self.display_res)
-        self.overlay = pygame.Surface(self.display_res, pygame.SRCALPHA)
+        self.grid_overlay = pygame.Surface(self.display_res, pygame.SRCALPHA)
 
         #Enables frame rates
         self.clock = pygame.time.Clock()
@@ -63,7 +64,7 @@ class Editor:
         self.show_origin = True
 
         self.tile_list = list(self.assets.assets)
-        self.tile_group = 'decor'
+        self.tile_group = 0
         self.tile_variant = 2
 
         self.clicking = False
@@ -77,7 +78,7 @@ class Editor:
         #Draws button UI and stores them in an array
         self.ui = UI(self)
         self.buttons = []
-        self.ui.load_tile_ui(self.overlay)
+        #self.ui.load_tile_ui(self.grid_overlay)
         
         
 
@@ -97,20 +98,20 @@ class Editor:
         if self.show_grid:
             for col in range(cols):
                 x = start_x + col * tile_size
-                pygame.draw.line(self.overlay, (255,255,255,min(self.grid_opacity, 255)), (x,0), (x, self.display_res[1]))
+                pygame.draw.line(self.grid_overlay, (255,255,255,min(self.grid_opacity, 255)), (x,0), (x, self.display_res[1]))
             
             for row in range(rows):
                 y = start_y + row * tile_size
-                pygame.draw.line(self.overlay, (255,255,255,min(self.grid_opacity, 255)), (0,y), (self.display_res[0], y))
+                pygame.draw.line(self.grid_overlay, (255,255,255,min(self.grid_opacity, 255)), (0,y), (self.display_res[0], y))
         
         #renders the world origin
         #X origin(horizontal)
         if self.show_origin:
-            x_orig = pygame.draw.line(self.overlay, (0,0,255,min(self.origin_opacity, 255)),
+            x_orig = pygame.draw.line(self.grid_overlay, (0,0,255,min(self.origin_opacity, 255)),
                             (self.world_origin[0], self.world_origin[1] - self.scroll[1]),
                             (self.display.width, -self.scroll[1]))
             #Y origin(vertical)
-            y_orig = pygame.draw.line(self.overlay, (255,0,0,min(self.origin_opacity, 255)),
+            y_orig = pygame.draw.line(self.grid_overlay, (255,0,0,min(self.origin_opacity, 255)),
                             (-self.scroll[0], self.world_origin[1]),
                             (-self.scroll[0], self.display.height))
 
@@ -118,7 +119,7 @@ class Editor:
         while True:
             #refreshes the screen with a black background
             self.display.fill((20,20,25))
-            self.overlay.fill((0,0,0,0))
+            self.grid_overlay.fill((0,0,0,0))
 
             self.is_hovering = False
 
@@ -140,17 +141,17 @@ class Editor:
             #Draws the grid
             self.draw_grid()
             for button in self.buttons:
-                button.draw(self.overlay, mpos)
+                button.draw(self.grid_overlay, mpos)
             
 
             text_surface = self.layer_text.render('Layer ' + str(self.current_layer), False, (255,255,255)).convert()
             text_surface.set_alpha(self.layer_text_opacity)
-            self.overlay.blit(text_surface,
-                            (self.overlay.width - text_surface.width - 5,
-                            self.overlay.height - text_surface.height))        
+            self.grid_overlay.blit(text_surface,
+                            (self.grid_overlay.width - text_surface.width - 5,
+                            self.grid_overlay.height - text_surface.height))        
 
             #Sets the preview tile image of the selected tile
-            current_tile_img = self.assets.assets[self.tile_group][self.tile_variant].copy()
+            current_tile_img = self.assets.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
             current_tile_img.set_alpha(100)
 
             
@@ -168,17 +169,17 @@ class Editor:
                 if self.current_layer not in self.active_layers:
                     self.active_layers.append(self.current_layer)
                     self.tilemap.active_layers.append(self.current_layer)
-                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': self.tile_group, 'variant': self.tile_variant, 'pos': tile_pos, 'layer': self.current_layer}
+                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1]) + ';' + str(self.current_layer)] = {'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos, 'layer': self.current_layer}
             #Deletes tile at mouse position
             #Checks to see if player is hovering over UI
-            if self.right_clicking and not self.is_hovering:
-                tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
+            if self.right_clicking:
+                tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1]) + ';' + str(self.current_layer)
                 if tile_loc in self.tilemap.tilemap:
                     del self.tilemap.tilemap[tile_loc]
                 for tile in self.tilemap.offgrid_tiles.copy():
                     tile_img = self.assets.assets[tile['type']][tile['variant']]
                     tile_r = pygame.Rect(tile['pos'][0] - self.scroll[0], tile['pos'][1] - self.scroll[1], tile_img.get_width(), tile_img.get_height())
-                    if tile_r.collidepoint(mpos):
+                    if tile_r.collidepoint(mpos) and tile['layer'] == self.current_layer:
                         self.tilemap.offgrid_tiles.remove(tile)
 
             #Shows preview tile image in top left of screen
@@ -207,20 +208,16 @@ class Editor:
                     #Changes the tile selection
                     if self.shift:
                         if event.button == 4:
-                            pass
-                            #self.tile_variant = (self.tile_variant - 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
+                            self.tile_variant = (self.tile_variant - 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
                         if event.button == 5:
-                            pass
-                            #self.tile_variant = (self.tile_variant + 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
+                            self.tile_variant = (self.tile_variant + 1) % len(self.assets.assets[self.tile_list[self.tile_group]])
                     else:
                         if event.button == 4:
-                            pass
-                            #self.tile_group = (self.tile_group - 1) % len(self.tile_list)
-                            #self.tile_variant = 0
+                            self.tile_group = (self.tile_group - 1) % len(self.tile_list)
+                            self.tile_variant = 0
                         if event.button == 5:
-                            pass
-                            #self.tile_group = (self.tile_group + 1) % len(self.tile_list)
-                            #self.tile_variant = 0
+                            self.tile_group = (self.tile_group + 1) % len(self.tile_list)
+                            self.tile_variant = 0
                 if event.type == pygame.MOUSEBUTTONUP:
                     #LMB
                     if event.button == 1:
@@ -280,8 +277,8 @@ class Editor:
                     if event.key == pygame.K_LSHIFT:
                         self.shift = False
                 
-            self.display.blit(self.overlay, (0, 0))
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0,0))
+            self.display.blit(self.grid_overlay, (0, 0))
+            self.screen.blit(pygame.transform.scale(self.display, self.editor_upscale_res), (self.screen_res[0] - self.editor_upscale_res[0],0))
             pygame.display.update()
             self.clock.tick(60)
 

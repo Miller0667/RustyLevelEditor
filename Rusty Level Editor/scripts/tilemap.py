@@ -106,7 +106,7 @@ class Tilemap:
             
             for x in range(offset[0] // self.tile_size, (offset[0] + surf.get_width()) // self.tile_size + 1):
                 for y in range(offset[1] // self.tile_size, (offset[1] + surf.get_height()) // self.tile_size + 1):
-                    loc = str(x) + ';' + str(y)
+                    loc = str(x) + ';' + str(y) + ';' + str(layer)
                     if loc in self.tilemap:
                         tile = self.tilemap[loc]
                         if tile['layer'] == layer:
