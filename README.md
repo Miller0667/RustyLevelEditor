@@ -7,7 +7,7 @@ I dont expect this level editor to be used by anyone but myself. Therfore, it wi
 about this program:
 
 The window size is 1280x960
-The display is 320x240
+The display is 320x240(1/4th scale)
 
 keybinds:
 
