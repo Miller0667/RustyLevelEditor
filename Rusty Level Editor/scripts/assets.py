@@ -6,7 +6,7 @@ from scripts.utils import load_images
 class Assets:
     def __init__(self):
         self.assets = {}
-        self.tile_list_path = 'Rusty Level Editor\data\images/tiles'
+        self.tile_list_path = 'data\images/tiles'
         tile_file_list = os.listdir(self.tile_list_path) 
         for file in tile_file_list:
             if file not in self.assets:
