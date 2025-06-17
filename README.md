@@ -57,7 +57,7 @@ Layers:
 I very quickly made a layer system. Right now, it mainly works with the offgrid tiles, which is the main reason i needed the layer system anyways.
 with the way it renders tiles, offgrid tiles will always be behind on grid tiles within the same layer. If the
 offgrid tiles are 1 layer above the on grid tiles, then they will be placed in front of the on grid tiles
-P.S. Do not worry if you space layers out more than 1 or 2 between eahc layer. The way it renders, it only renders layers with actual tiles on them.
+P.S. Do not worry if you space layers out more than 1 or 2 between each layer. The way it renders, it only renders layers with actual tiles on them.
 There is not a system that checks for tiles, only if you place a tile on the layer that has not been used, it will initiate that layer. If you delete all tiles off of a
 layer, it will still be active. This will be changed in the future
 
@@ -82,7 +82,7 @@ near future-
 
 -Alt. window for tiles
 
--Layer tile delete
+-Layer tile delete- Implemented 06/16
 
 further out-
 
