@@ -8,6 +8,9 @@ from scripts.tilemap import Tilemap
 from scripts.assets import Assets
 from scripts.user_interface import UI
 
+import tkinter as tk
+from tkinter import filedialog
+
 
 #class Tilemap:
  #   def __init
@@ -248,9 +251,18 @@ class Editor:
                         self.show_grid = not self.show_grid
                     if event.key == pygame.K_2:
                         self.show_origin = not self.show_origin
+                    #pulls up file selection for saving maps
                     if event.key == pygame.K_o:
-                        print('Saved')
-                        self.tilemap.save('map.json')
+                        try:
+                            self.tilemap.save(self.save_file_dialog())
+                        except FileNotFoundError:
+                            pass
+                    #Pulls up file selection for loading maps
+                    if event.key == pygame.K_p:
+                        try:
+                            self.tilemap.load(self.load_file_dialog())
+                        except FileNotFoundError:
+                            pass
                     if event.key == pygame.K_DELETE:
                         self.tilemap.clear_map()
                     if event.key == pygame.K_LSHIFT:
@@ -281,5 +293,19 @@ class Editor:
             self.screen.blit(pygame.transform.scale(self.display, self.editor_upscale_res), (self.screen_res[0] - self.editor_upscale_res[0],0))
             pygame.display.update()
             self.clock.tick(60)
+
+    def save_file_dialog(self):
+        root = tk.Tk()
+        root.withdraw()
+        file_path = filedialog.asksaveasfilename(defaultextension='.json')
+        root.destroy()
+        return file_path
+
+    def load_file_dialog(self):
+        root = tk.Tk()
+        root.withdraw()
+        file_path = filedialog.askopenfilename(defaultextension='.json')
+        root.destroy()
+        return file_path
 
 Editor().run()
