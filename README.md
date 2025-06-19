@@ -7,7 +7,7 @@ I dont expect this level editor to be used by anyone but myself. Therfore, it wi
 about this program:
 
 The window size is 1280x960
-The display is 320x240(1/4th scale)
+The display is 320x240(1/4th scale). There is no way to resize running application as of yet. Will be added in a future update
 
 keybinds:
 
@@ -53,13 +53,10 @@ Tile group refers to the folder that holds the tiles(decor, wood, stone, small d
 The tile variant refers to each individual image within the tile group
 
 Layers:
-
-I very quickly made a layer system. Right now, it mainly works with the offgrid tiles, which is the main reason i needed the layer system anyways.
 with the way it renders tiles, offgrid tiles will always be behind on grid tiles within the same layer. If the
-offgrid tiles are 1 layer above the on grid tiles, then they will be placed in front of the on grid tiles
-P.S. Do not worry if you space layers out more than 1 or 2 between each layer. The way it renders, it only renders layers with actual tiles on them.
-There is not a system that checks for tiles, only if you place a tile on the layer that has not been used, it will initiate that layer. If you delete all tiles off of a
-layer, it will still be active. This will be changed in the future
+offgrid tiles are 1 layer above the on grid tiles, then they will be placed in front of the on grid tiles.
+You can delete only the tiles that were placed on the layer you are currently on,
+I know this can get a bit frustrating when deleting a lot of things, so I will add some keybinds in the future to toggle this on/off
 
 how to add more tile assets:
 You can not add any assets through the editor as of yet, you need to go into the code and manually drag and drop your tile folder into the data/images/tiles section. It will read it from there
