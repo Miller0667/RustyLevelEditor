@@ -1,8 +1,10 @@
+![image](https://github.com/user-attachments/assets/b5d17b82-2d22-4de7-bfbc-cd18c7fa85b7)
+![image](https://github.com/user-attachments/assets/2c47603f-1819-44ba-96dd-c3c58c901710)
+
+
 Hello!
 
 This is a personal project of mine to help me get more familiar with python and pygame
-
-I dont expect this level editor to be used by anyone but myself. Therfore, it will only have tools that i would personally use in my level editing needs, then maybe some extra cause its fun to make this kind of stuff
 
 about this program:
 
@@ -53,19 +55,24 @@ Tile group refers to the folder that holds the tiles(decor, wood, stone, small d
 The tile variant refers to each individual image within the tile group
 
 Layers:
+
+![image](https://github.com/user-attachments/assets/e2d9d62b-5ec1-4786-844e-afe0e7ffff71)
+
+
 with the way it renders tiles, offgrid tiles will always be behind on grid tiles within the same layer. If the
 offgrid tiles are 1 layer above the on grid tiles, then they will be placed in front of the on grid tiles.
 You can delete only the tiles that were placed on the layer you are currently on,
 I know this can get a bit frustrating when deleting a lot of things, so I will add some keybinds in the future to toggle this on/off
 
 how to add more tile assets:
-You can not add any assets through the editor as of yet, you need to go into the code and manually drag and drop your tile folder into the data/images/tiles section. It will read it from there
+You can not add any assets through the editor, you need to go into the code and manually drag and drop your tile folder into the data/images/tiles section. It will read it from there
 
 autotile:
-There is no autotile function as of yet. there is skeleton code for it, but i plan on adding auto tile UI to the editor
+There is no autotile function. there is skeleton code for it, but i plan on adding auto tile UI to the editor
 
 Flood fill:
 I do have plans to add flood fill to the editor in the near future, but i want to work on basic UI first before i get to that part
+
 
 Planned updates:
 
