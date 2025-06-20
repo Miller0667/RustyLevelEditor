@@ -11,6 +11,13 @@ about this program:
 The window size is 1280x960
 The display is 320x240(1/4th scale). There is no way to resize running application as of yet. Will be added in a future update
 
+HOW TO GET IT TO WORK:
+the file itself will work out of the box. If you want to be able to use it in game, all you have to do is put the 'tilemap.py' file into any of your projects, then instance a variable.
+for example:
+'import tilemap
+world = tilemap
+world.load('~map directory~')'
+
 keybinds:
 
 W,A,S,D - Camera Movement
